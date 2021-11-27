@@ -1,0 +1,1 @@
+document.querySelector("main div .ms-auto").innerHTML += '<a href="'+stripe_form_url+'" class="btn btn-primary">'+res_purchase_for_price+' Card</a>';
