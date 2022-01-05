@@ -21,8 +21,7 @@ $resource = end($queries->getWhere('resources', array('id', '=', $_GET['res_id']
 
 
 $cache->setCache('stripe_data');
-$cache->store('stripe_pub_' .$resource->creator_id, 'pk_test_51JyHKeD4oUhXejKY279I5CSdrHolZKDJZPCLMFDAnFpJNTekJ6PqS9IQQdJO0UW1sQbh9cjupUIBhE7Ss9ZnSIky00Q1TY3IfA');
-$cache->store('stripe_pri_' .$resource->creator_id, 'sk_test_51JyHKeD4oUhXejKYWLzemD7As8UIGzAqPHgBiChWJJ9TRUVCFB0rlN5AGIQgLOAIY18G8NvXRuFlRlK3o8hCu5Y000nyczeb4t');
+
 if(!$cache->isCached('stripe_pub_' . $resource->creator_id)){
     Redirect::to(URL::build('/resources/resource/' . $resource->id));
     die();
