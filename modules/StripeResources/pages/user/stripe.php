@@ -16,7 +16,7 @@ if(Input::exists()){
   if(Token::check(Input::get('token'))){
 
     if(isset($_POST['publishable_key']) and isset($_POST['secret_key'])){
-      $cache->setCache('stripe_data');
+      $cache->setCache('stripe_user_data');
 
       $cache->store('stripe_pub_' . $user->data()->id, $_POST['publishable_key']);
       $cache->store('stripe_pri_' . $user->data()->id, $_POST['secret_key']);
@@ -26,7 +26,7 @@ if(Input::exists()){
 
 }
 
-$cache->setCache('stripe_data');
+$cache->setCache('stripe_user_data');
 if(!$cache->isCached('stripe_pub_' . $user->data()->id)){
     $publishable_key = '';
     $secret_key = '';

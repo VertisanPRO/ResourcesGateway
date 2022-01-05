@@ -43,7 +43,7 @@ class StripeResources extends Module
     if (defined('FRONT_END')) {
       if (RESOURCE_PAGE == 'view_resource') {
 
-        $cache->setCache('stripe_data');
+        $cache->setCache('stripe_user_data');
         $creator_id = $user->nameToId($smarty->getTemplateVars('AUTHOR_NAME'));
         if($cache->isCached('stripe_pub_' . $creator_id) and !empty($cache->retrieve('stripe_pub_' . $creator_id))){
 

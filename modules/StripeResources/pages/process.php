@@ -17,7 +17,7 @@ use Stripe\Charge;
 // Get resource
 $resource = end($queries->getWhere('resources', array('id', '=', $_POST['res_id'])));
 
-$cache->setCache('stripe_data');
+$cache->setCache('stripe_user_data');
 if(!$cache->isCached('stripe_pub_' . $resource->creator_id)){
     Redirect::to(URL::build('/resources/resource/' . $resource->id));
     die();
