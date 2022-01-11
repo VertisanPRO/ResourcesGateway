@@ -42,6 +42,14 @@ class StripeResources extends Module
 
     if (defined('FRONT_END')) {
       if (RESOURCE_PAGE == 'view_resource') {
+        $payments = DB::getInstance()->query('SELECT * FROM `nl2_resources_payments` WHERE `resource_id` = ? AND `status` = 1', array($smarty->getTemplateVars('RESOURCE_ID')))->results();
+        $payments_count = count($payments);
+        // if ($payments_count > 0) {
+          $template->addJSScript('
+          var payments_count = \'' . $payments_count .'\';
+          ');
+        // }
+
 
         $cache->setCache('stripe_user_data');
         $creator_id = $user->nameToId($smarty->getTemplateVars('AUTHOR_NAME'));
@@ -57,12 +65,15 @@ class StripeResources extends Module
             var res_purchase_for_price = \'' . $res_purchase_for_price .'\';
             var stripe_form_url = \'' . $form_url .'\';
             ');
-
-            $template->addJSFiles(array(
-              (defined('CONFIG_PATH') ? CONFIG_PATH : '') . '/modules/'. $this->module_name .'/js/'. $template->getName() .'.js' => array()
-            ));
           }
+        } else {
+          $template->addJSScript('
+          var res_id = 0;
+          ');
         }
+        $template->addJSFiles(array(
+          (defined('CONFIG_PATH') ? CONFIG_PATH : '') . '/modules/'. $this->module_name .'/js/'. $template->getName() .'.js' => array()
+        ));
       }
     
     }
