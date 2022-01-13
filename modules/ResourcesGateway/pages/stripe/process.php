@@ -10,7 +10,7 @@ define('PAGE', 'resources');
 require_once(ROOT_PATH . '/core/templates/frontend_init.php');
 require(ROOT_PATH . '/modules/Resources/classes/Resources.php');
 
-require(ROOT_PATH . '/modules/StripeResources/stripe-php/init.php');
+require(ROOT_PATH . '/modules/ResourcesGateway/pages/stripe/stripe-php/init.php');
 use Stripe\Stripe;
 use Stripe\Charge;
 

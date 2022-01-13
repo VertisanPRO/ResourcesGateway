@@ -1,7 +1,10 @@
 <?php
 
 $language = array(
-	'title' => 'StripeResourese',
+	'title' => 'Resources Gateway',
+  'stripe' => 'Stripe',
+  'cent_app' => 'CENT APP',
+  'more_ways' => 'More Ways',
 	'card_holder_name' => 'Card Holder Name',
 	'email' => 'Email',
 	'card_number' => 'Card Number',

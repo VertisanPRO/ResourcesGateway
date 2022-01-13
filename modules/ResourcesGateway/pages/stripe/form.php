@@ -22,7 +22,7 @@ $resource = end($queries->getWhere('resources', array('id', '=', $_GET['res_id']
 
 $cache->setCache('stripe_user_data');
 
-if(!$cache->isCached('stripe_pub_' . $resource->creator_id)){
+if(!$cache->isCached('stripe_pub_' . $resource->creator_id) or empty($cache->retrieve('stripe_pub_' . $resource->creator_id))){
     Redirect::to(URL::build('/resources/resource/' . $resource->id));
     die();
 } else {
@@ -39,19 +39,19 @@ $smarty->assign(array(
   'RESOURCE' => $resource,
   'CURRENCY' => $currency,
   'PROCESS_URL' => URL::build('/resource/stripe/process'),
-  'CARD_HOLDER_NAME' => $stripe_language->get('general', 'card_holder_name'),
-  'EMAIL' => $stripe_language->get('general', 'email'),
-  'CARD_NUMBER' => $stripe_language->get('general', 'card_number'),
-  'MONTH' => $stripe_language->get('general', 'month'),
-  'YEAR' => $stripe_language->get('general', 'year'),
-  'CVV' => $stripe_language->get('general', 'cvv'),
-  'PAY_NOW' => $stripe_language->get('general', 'pay_now'),
+  'CARD_HOLDER_NAME' => $res_gateway_language->get('general', 'card_holder_name'),
+  'EMAIL' => $res_gateway_language->get('general', 'email'),
+  'CARD_NUMBER' => $res_gateway_language->get('general', 'card_number'),
+  'MONTH' => $res_gateway_language->get('general', 'month'),
+  'YEAR' => $res_gateway_language->get('general', 'year'),
+  'CVV' => $res_gateway_language->get('general', 'cvv'),
+  'PAY_NOW' => $res_gateway_language->get('general', 'pay_now'),
   'PUBLISHABLE_KEY' => $publishable_key,
   'TOKEN' => Token::get(),
 ));
 
 
-$template_file = 'resources/stripe_form.tpl';
+$template_file = 'resources-gateway/stripe_form.tpl';
 
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets, $template);
