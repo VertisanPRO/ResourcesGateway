@@ -74,6 +74,13 @@ $smarty->assign(array(
   'GATEWAY_STATUS' => $user_gateway_status
 ));
 
+// API Links
+$smarty->assign(array(
+  'CENT_SUCCESS_URL' => Util::getSelfURL() .  URL::build('cent-app/success'),
+  'CENT_LISTENER_URL' => Util::getSelfURL() .  URL::build('cent-app/listener'),
+  'CENT_FAIL_URL' => Util::getSelfURL() . URL::build('cent-app/fail')
+));
+
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets);
 

@@ -81,6 +81,12 @@
               <input type="hidden" name="token" value="{$TOKEN}">
             </form>
           </div>
+            <div class="card-body">
+              <strong>API LINKS:</strong>
+              <p>SUCCESS URL: <strong>{$CENT_SUCCESS_URL}</strong></p>
+              <p>FAIL URL: <strong>{$CENT_FAIL_URL}</strong></p>
+              <p>RESULT URL: <strong>{$CENT_LISTENER_URL}</strong></p>
+            </div>
         </div>
       </div>
 
