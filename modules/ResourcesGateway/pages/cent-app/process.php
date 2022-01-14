@@ -28,6 +28,10 @@ if(!$cache->isCached('centapp_key_' . $resource->creator_id)){
 $currency = end($queries->getWhere('settings', array('name', '=', 'resources_currency')));
 $currency = $currency->value;
 
+if ($currency != 'RUB' or $currency != 'EUR') {
+  $currency = 'USD';
+}
+
 $back_url = URL::build('/resource/' . $resource->id);
 
 $custom = array(
