@@ -14,18 +14,18 @@ require(ROOT_PATH . '/modules/ResourcesGateway/pages/cent-app/CentApp.php');
 require(ROOT_PATH . '/modules/Resources/classes/Resources.php');
 require(ROOT_PATH . '/core/templates/frontend_init.php');
 
-$resource = end($queries->getWhere('resources', array('id', '=', $_GET['res_id'])));
+$resource = DB::getInstance()->get('resources', ['id', '=', $_GET['res_id']])->first();
 
 $cache->setCache('centapp_user_data');
-if(!$cache->isCached('centapp_key_' . $resource->creator_id)){
-    Redirect::to(URL::build('/resources/resource/' . $resource->id));
-    die();
+if (!$cache->isCached('centapp_key_' . $resource->creator_id)) {
+  Redirect::to(URL::build('/resources/resource/' . $resource->id));
+  die();
 } else {
-    $centapp_key = $cache->retrieve('centapp_key_' . $resource->creator_id);
-    $centapp_shop = $cache->retrieve('centapp_shop_' . $resource->creator_id);
+  $centapp_key = $cache->retrieve('centapp_key_' . $resource->creator_id);
+  $centapp_shop = $cache->retrieve('centapp_shop_' . $resource->creator_id);
 }
 
-$currency = end($queries->getWhere('settings', array('name', '=', 'resources_currency')));
+$currency = DB::getInstance()->get('settings', ['name', '=', 'resources_currency'])->first();
 $currency = $currency->value;
 
 if ($currency != 'RUB' or $currency != 'EUR') {
@@ -55,4 +55,3 @@ if ($resp['success']) {
 } else {
   Redirect::to($back_url);
 }
-

@@ -13,7 +13,7 @@ if (!isset($_POST['Status']) or $_POST['Status'] != 'SUCCESS') {
 }
 
 $data = json_decode($_POST['custom'], true);
-$resource = end($queries->getWhere('resources', array('id', '=', $_POST['InvId'])));
+$resource = DB::getInstance()->get('resources', ['id', '=', $_POST['InvId']])->first();
 
 
 if (empty($resource)) {
@@ -23,7 +23,7 @@ if (empty($resource)) {
 }
 
 $cache->setCache('centapp_user_data');
-if($cache->isCached('centapp_key_' . $resource->creator_id) and !empty($cache->retrieve('centapp_key_' . $resource->creator_id))){
+if ($cache->isCached('centapp_key_' . $resource->creator_id) and !empty($cache->retrieve('centapp_key_' . $resource->creator_id))) {
   $centapp_key = $cache->retrieve('centapp_key_' . $resource->creator_id);
   $centapp_shop = $cache->retrieve('centapp_shop_' . $resource->creator_id);
 } else {
@@ -43,14 +43,13 @@ if ($signature == $_POST['SignatureValue']) {
   if (!$existing_license->count()) {
 
     // Add license
-    $queries->create('resources_payments', array(
-        'user_id' => (int) $user->data()->id,
-        'resource_id' => (int) $resource->id,
-        'transaction_id' => $_POST['TrsId'],
-        'created' => date('U'),
-        'status' => 1
-    ));
-    
+    DB::getInstance()->insert('resources_payments', [
+      'status' => 1,
+      'created' => date('U'),
+      'user_id' => (int) $user->data()->id,
+      'resource_id' => (int) $resource->id,
+      'transaction_id' => $description
+    ]);
     // Alert
     Alert::create($user->data()->id, 'resource_purchased', array('path' => ROOT_PATH . '/modules/Resources/language', 'file' => 'resources', 'term' => 'resource_purchased'), array('path' => ROOT_PATH . '/modules/Resources/language', 'file' => 'resources', 'term' => 'resource_purchased_full', 'replace' => '{x}', 'replace_with' => $resource->name), Resources::buildURL($resource->id, $resource->name));
 
@@ -60,18 +59,13 @@ if ($signature == $_POST['SignatureValue']) {
     $_POST['error_log'] = 'no errors';
     file_put_contents($logs_path, json_encode($_POST));
     exit;
-
   } else {
     $_POST['error_log'] = 'buyer license exist';
     file_put_contents($logs_path, json_encode($_POST));
     exit;
   }
-
 } else {
   $_POST['error_log'] = 'signature error';
   file_put_contents($logs_path, json_encode($_POST));
   exit;
 }
-
-$_POST['error_log'] = 'unknown error';
-file_put_contents($logs_path, json_encode($_POST));

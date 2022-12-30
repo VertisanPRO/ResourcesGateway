@@ -16,21 +16,21 @@ $page_title = $resource_language->get('resources', 'resources') . ' - ' . str_re
 
 require_once(ROOT_PATH . '/core/templates/frontend_init.php');
 
-$resource = end($queries->getWhere('resources', array('id', '=', $_GET['res_id'])));
+$resource = DB::getInstance()->get('resources', ['id', '=', $_GET['res_id']])->first();
 
 
 
 $cache->setCache('stripe_user_data');
 
-if(!$cache->isCached('stripe_pub_' . $resource->creator_id) or empty($cache->retrieve('stripe_pub_' . $resource->creator_id))){
-    Redirect::to(URL::build('/resources/resource/' . $resource->id));
-    die();
+if (!$cache->isCached('stripe_pub_' . $resource->creator_id) or empty($cache->retrieve('stripe_pub_' . $resource->creator_id))) {
+  Redirect::to(URL::build('/resources/resource/' . $resource->id));
+  die();
 } else {
-    $publishable_key = $cache->retrieve('stripe_pub_' . $resource->creator_id);
+  $publishable_key = $cache->retrieve('stripe_pub_' . $resource->creator_id);
 }
 
 // Get currency
-$currency = end($queries->getWhere('settings', array('name', '=', 'resources_currency')));
+$currency = DB::getInstance()->get('settings', ['name', '=', 'resources_currency'])->first();
 $currency = $currency->value;
 
 
@@ -54,7 +54,7 @@ $smarty->assign(array(
 $template_file = 'resources-gateway/stripe_form.tpl';
 
 // Load modules + template
-Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets, $template);
+Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);
 
 $page_load = microtime(true) - $start;
 define('PAGE_LOAD_TIME', str_replace('{x}', round($page_load, 3), $language->get('general', 'page_loaded_in')));

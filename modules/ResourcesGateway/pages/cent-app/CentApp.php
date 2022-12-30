@@ -3,8 +3,7 @@
 class CentApp
 {
   public $api_url = "https://cent.app/api/v1/";
-  public $api_key;
-  public $headers;
+  public $api_key, $shop_id, $headers;
 
   public function __construct($api_key, $shop_id)
   {
@@ -13,14 +12,14 @@ class CentApp
     $this->headers = array(
       "Accept: application/json",
       "Authorization: Bearer {$api_key}",
-   );
+    );
   }
 
   private function getDataStr(array $data)
   {
-    $resp = 'shop_id='. $this->shop_id . '&';
+    $resp = 'shop_id=' . $this->shop_id . '&';
     foreach ($data as $key => $value) {
-     $resp .= $key. '=' . $value . '&'; 
+      $resp .= $key . '=' . $value . '&';
     }
     return trim($resp, '&');
   }
@@ -43,6 +42,5 @@ class CentApp
     $resp = curl_exec($curl);
     curl_close($curl);
     return json_decode($resp, true);
-    var_dump($resp);
   }
 }

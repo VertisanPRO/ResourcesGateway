@@ -1,0 +1,13 @@
+{
+  "general/title": "Resources Gateway",
+  "general/stripe": "Stripe",
+  "general/cent_app": "Cent App",
+  "general/more_ways": "More Ways",
+  "general/card_holder_name": "Card Holder Name",
+  "general/email": "Email",
+  "general/card_number": "Card Number",
+  "general/month": "Month",
+  "general/year": "Year",
+  "general/cvv": "CVV",
+  "general/pay_now": "Pay now"
+}

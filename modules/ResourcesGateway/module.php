@@ -29,7 +29,6 @@ class ResourcesGateway extends Module
 
   public function onInstall()
   {
-
   }
 
   public function onUninstall()
@@ -38,7 +37,6 @@ class ResourcesGateway extends Module
 
   public function onEnable()
   {
-
   }
 
   public function onDisable()
@@ -57,25 +55,25 @@ class ResourcesGateway extends Module
         $payments = DB::getInstance()->query('SELECT * FROM `nl2_resources_payments` WHERE `resource_id` = ? AND `status` = 1', array($smarty->getTemplateVars('RESOURCE_ID')))->results();
         $payments_count = count($payments);
         $template->addJSScript('
-          var payments_count = \'' . $payments_count .'\';
+          var payments_count = \'' . $payments_count . '\';
         ');
 
         $creator_id = $user->nameToId($smarty->getTemplateVars('AUTHOR_NAME'));
 
         $cache->setCache('setting_gateway');
-        if($cache->isCached('user_gateway_status_' . $creator_id) and !empty($cache->retrieve('user_gateway_status_' . $creator_id))){
+        if ($cache->isCached('user_gateway_status_' . $creator_id) and !empty($cache->retrieve('user_gateway_status_' . $creator_id))) {
 
-          if(!empty($smarty->getTemplateVars('PURCHASE_FOR_PRICE'))){
+          if (!empty($smarty->getTemplateVars('PURCHASE_FOR_PRICE'))) {
 
             if ($cache->retrieve('user_gateway_status_' . $creator_id) == 'enable') {
               $res_id = $smarty->getTemplateVars('RESOURCE_ID');
               $res_gateway_button = $this->res_gateway_language->get('general', 'more_ways');
-              $gateway_url = URL::build('/resource/gateway', 'res_id='.$res_id);
-              
+              $gateway_url = URL::build('/resource/gateway', 'res_id=' . $res_id);
+
               $template->addJSScript('
-                var res_id = \'' . $res_id .'\';
-                var res_gateway_button = \'' . $res_gateway_button .'\';
-                var gateway_url = \'' . $gateway_url .'\';
+                var res_id = \'' . $res_id . '\';
+                var res_gateway_button = \'' . $res_gateway_button . '\';
+                var gateway_url = \'' . $gateway_url . '\';
               ');
             } else {
               $template->addJSScript('
@@ -89,9 +87,14 @@ class ResourcesGateway extends Module
           ');
         }
         $template->addJSFiles(array(
-          (defined('CONFIG_PATH') ? CONFIG_PATH : '') . '/modules/'. $this->module_name .'/js/'. $template->getName() .'.js' => array()
+          (defined('CONFIG_PATH') ? CONFIG_PATH : '') . '/modules/' . $this->module_name . '/js/' . $template->getName() . '.js' => array()
         ));
       }
     }
+  }
+
+  public function getDebugInfo(): array
+  {
+    return [];
   }
 }
