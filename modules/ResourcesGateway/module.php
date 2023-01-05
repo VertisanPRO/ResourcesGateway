@@ -58,7 +58,21 @@ class ResourcesGateway extends Module
           var payments_count = \'' . $payments_count . '\';
         ');
 
-        $creator_id = $user->nameToId($smarty->getTemplateVars('AUTHOR_NAME'));
+        $rid = explode('/', $route);
+        $rid = $rid[count($rid) - 1];
+
+        if (!strlen($rid)) {
+          Redirect::to(URL::build('/resources'));
+        }
+
+        $rid = explode('-', $rid);
+        if (!is_numeric($rid[0])) {
+          Redirect::to(URL::build('/resources'));
+        }
+        $rid = $rid[0];
+        $resource = DB::getInstance()->get('resources', ['id', '=', $rid]);
+        $author = new User($resource->creator_id);
+        $creator_id = $user->nameToId($author->getDisplayname(true));
 
         $cache->setCache('setting_gateway');
         if ($cache->isCached('user_gateway_status_' . $creator_id) and !empty($cache->retrieve('user_gateway_status_' . $creator_id))) {
@@ -86,9 +100,11 @@ class ResourcesGateway extends Module
             var res_id = 0;
           ');
         }
-        $template->addJSFiles(array(
-          (defined('CONFIG_PATH') ? CONFIG_PATH : '') . '/modules/' . $this->module_name . '/js/' . $template->getName() . '.js' => array()
-        ));
+        $template->addJSFiles(
+          array(
+            (defined('CONFIG_PATH') ? CONFIG_PATH : '') . '/modules/' . $this->module_name . '/js/' . $template->getName() . '.js' => array()
+          )
+        );
       }
     }
   }
