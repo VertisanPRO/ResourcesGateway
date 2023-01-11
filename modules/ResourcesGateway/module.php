@@ -3,114 +3,115 @@
 class ResourcesGateway extends Module
 {
 
-  public function __construct($language, $pages, $INFO_MODULE, $res_gateway_language)
-  {
-    $this->_language = $language;
-    $this->res_gateway_language = $res_gateway_language;
-    $this->module_name = $INFO_MODULE['name'];
-    $author = $INFO_MODULE['author'];
-    $module_version = $INFO_MODULE['module_ver'];
-    $nameless_version = $INFO_MODULE['nml_ver'];
-    parent::__construct($this, $this->module_name, $author, $module_version, $nameless_version);
+    public function __construct($language, $pages, $INFO_MODULE, $res_gateway_language)
+    {
+        $this->_language = $language;
+        $this->res_gateway_language = $res_gateway_language;
+        $this->module_name = $INFO_MODULE['name'];
+        $author = $INFO_MODULE['author'];
+        $module_version = $INFO_MODULE['module_ver'];
+        $nameless_version = $INFO_MODULE['nml_ver'];
+        parent::__construct($this, $this->module_name, $author, $module_version, $nameless_version);
 
-    $pages->add($this->module_name, '/user/resources/gateway', 'pages/user/gateway.php');
-    $pages->add($this->module_name, '/resource/gateway', 'pages/gateway.php');
+        $pages->add($this->module_name, '/user/resources/gateway', 'pages/user/gateway.php');
+        $pages->add($this->module_name, '/resource/gateway', 'pages/gateway.php');
 
-    // CENT-APP
-    $pages->add($this->module_name, '/cent-app/success', 'pages/cent-app/success.php');
-    $pages->add($this->module_name, '/cent-app/fail', 'pages/cent-app/fail.php');
-    $pages->add($this->module_name, '/cent-app/listener', 'pages/cent-app/listener.php');
-    $pages->add($this->module_name, '/cent-app/process', 'pages/cent-app/process.php');
+        // CENT-APP
+        $pages->add($this->module_name, '/cent-app/success', 'pages/cent-app/success.php');
+        $pages->add($this->module_name, '/cent-app/fail', 'pages/cent-app/fail.php');
+        $pages->add($this->module_name, '/cent-app/listener', 'pages/cent-app/listener.php');
+        $pages->add($this->module_name, '/cent-app/process', 'pages/cent-app/process.php');
 
-    // Stripe
-    $pages->add($this->module_name, '/resource/stripe', 'pages/stripe/form.php');
-    $pages->add($this->module_name, '/resource/stripe/process', 'pages/stripe/process.php');
-  }
+        // Stripe
+        $pages->add($this->module_name, '/resource/stripe', 'pages/stripe/form.php');
+        $pages->add($this->module_name, '/resource/stripe/process', 'pages/stripe/process.php');
+    }
 
-  public function onInstall()
-  {
-  }
+    public function onInstall()
+    {
+    }
 
-  public function onUninstall()
-  {
-  }
+    public function onUninstall()
+    {
+    }
 
-  public function onEnable()
-  {
-  }
+    public function onEnable()
+    {
+    }
 
-  public function onDisable()
-  {
-  }
+    public function onDisable()
+    {
+    }
 
-  public function onPageLoad($user, $pages, $cache, $smarty, $navs, $widgets, $template)
-  {
+    public function onPageLoad($user, $pages, $cache, $smarty, $navs, $widgets, $template)
+    {
 
 
-    $navs[1]->add('resources_user_gateway', 'Resources Gateway', URL::build('/user/resources/gateway'), 'top', null, 11);
+        $navs[1]->add('resources_user_gateway', 'Resources Gateway', URL::build('/user/resources/gateway'), 'top', null, 11);
 
-    if (defined('FRONT_END')) {
-      if (RESOURCE_PAGE == 'view_resource') {
-
-        $payments = DB::getInstance()->query('SELECT * FROM `nl2_resources_payments` WHERE `resource_id` = ? AND `status` = 1', array($smarty->getTemplateVars('RESOURCE_ID')))->results();
-        $payments_count = count($payments);
-        $template->addJSScript('
+        if (defined('FRONT_END')) {
+            if (RESOURCE_PAGE == 'view_resource') {
+                if ($smarty->getTemplateVars('AUTHOR_NAME')) {
+                    $payments = DB::getInstance()->query('SELECT * FROM `nl2_resources_payments` WHERE `resource_id` = ? AND `status` = 1', array($smarty->getTemplateVars('RESOURCE_ID')))->results();
+                    $payments_count = count($payments);
+                    $template->addJSScript('
           var payments_count = \'' . $payments_count . '\';
         ');
 
-        $rid = explode('/', $route);
-        $rid = $rid[count($rid) - 1];
+                    $rid = explode('/', $route);
+                    $rid = $rid[count($rid) - 1];
 
-        if (!strlen($rid)) {
-          Redirect::to(URL::build('/resources'));
-        }
+                    if (!strlen($rid)) {
+                        Redirect::to(URL::build('/resources'));
+                    }
 
-        $rid = explode('-', $rid);
-        if (!is_numeric($rid[0])) {
-          Redirect::to(URL::build('/resources'));
-        }
-        $rid = $rid[0];
-        $resource = DB::getInstance()->get('resources', ['id', '=', $rid]);
-        $author = new User($resource->creator_id);
-        $creator_id = $user->nameToId($author->getDisplayname(true));
+                    $rid = explode('-', $rid);
+                    if (!is_numeric($rid[0])) {
+                        Redirect::to(URL::build('/resources'));
+                    }
+                    $rid = $rid[0];
+                    $resource = DB::getInstance()->get('resources', ['id', '=', $rid]);
+                    $author = new User($resource->creator_id);
+                    $creator_id = $user->nameToId($author->getDisplayname(true));
 
-        $cache->setCache('setting_gateway');
-        if ($cache->isCached('user_gateway_status_' . $creator_id) and !empty($cache->retrieve('user_gateway_status_' . $creator_id))) {
+                    $cache->setCache('setting_gateway');
+                    if ($cache->isCached('user_gateway_status_' . $creator_id) and !empty($cache->retrieve('user_gateway_status_' . $creator_id))) {
 
-          if (!empty($smarty->getTemplateVars('PURCHASE_FOR_PRICE'))) {
+                        if (!empty($smarty->getTemplateVars('PURCHASE_FOR_PRICE'))) {
 
-            if ($cache->retrieve('user_gateway_status_' . $creator_id) == 'enable') {
-              $res_id = $smarty->getTemplateVars('RESOURCE_ID');
-              $res_gateway_button = $this->res_gateway_language->get('general', 'more_ways');
-              $gateway_url = URL::build('/resource/gateway', 'res_id=' . $res_id);
+                            if ($cache->retrieve('user_gateway_status_' . $creator_id) == 'enable') {
+                                $res_id = $smarty->getTemplateVars('RESOURCE_ID');
+                                $res_gateway_button = $this->res_gateway_language->get('general', 'more_ways');
+                                $gateway_url = URL::build('/resource/gateway', 'res_id=' . $res_id);
 
-              $template->addJSScript('
+                                $template->addJSScript('
                 var res_id = \'' . $res_id . '\';
                 var res_gateway_button = \'' . $res_gateway_button . '\';
                 var gateway_url = \'' . $gateway_url . '\';
               ');
-            } else {
-              $template->addJSScript('
+                            } else {
+                                $template->addJSScript('
                 var res_id = 0;
               ');
-            }
-          }
-        } else {
-          $template->addJSScript('
+                            }
+                        }
+                    } else {
+                        $template->addJSScript('
             var res_id = 0;
           ');
+                    }
+                    $template->addJSFiles(
+                        array(
+                            (defined('CONFIG_PATH') ? CONFIG_PATH : '') . '/modules/' . $this->module_name . '/js/' . $template->getName() . '.js' => array()
+                        )
+                    );
+                }
+            }
         }
-        $template->addJSFiles(
-          array(
-            (defined('CONFIG_PATH') ? CONFIG_PATH : '') . '/modules/' . $this->module_name . '/js/' . $template->getName() . '.js' => array()
-          )
-        );
-      }
     }
-  }
 
-  public function getDebugInfo(): array
-  {
-    return [];
-  }
+    public function getDebugInfo(): array
+    {
+        return [];
+    }
 }
