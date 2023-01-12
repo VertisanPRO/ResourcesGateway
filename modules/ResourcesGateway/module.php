@@ -50,7 +50,7 @@ class ResourcesGateway extends Module
         $navs[1]->add('resources_user_gateway', 'Resources Gateway', URL::build('/user/resources/gateway'), 'top', null, 11);
 
         if (defined('FRONT_END')) {
-            if (RESOURCE_PAGE == 'view_resource') {
+            if (defined('RESOURCE_PAGE') and RESOURCE_PAGE == 'view_resource') {
                 if ($smarty->getTemplateVars('AUTHOR_NAME')) {
                     $payments = DB::getInstance()->query('SELECT * FROM `nl2_resources_payments` WHERE `resource_id` = ? AND `status` = 1', array($smarty->getTemplateVars('RESOURCE_ID')))->results();
                     $payments_count = count($payments);
