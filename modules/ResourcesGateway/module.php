@@ -52,27 +52,16 @@ class ResourcesGateway extends Module
         if (defined('FRONT_END')) {
             if (defined('RESOURCE_PAGE') and RESOURCE_PAGE == 'view_resource') {
                 if ($smarty->getTemplateVars('AUTHOR_NAME')) {
-                    $payments = DB::getInstance()->query('SELECT * FROM `nl2_resources_payments` WHERE `resource_id` = ? AND `status` = 1', array($smarty->getTemplateVars('RESOURCE_ID')))->results();
+                    $res_id = $smarty->getTemplateVars('RESOURCE_ID');
+
+                    $payments = DB::getInstance()->query('SELECT * FROM `nl2_resources_payments` WHERE `resource_id` = ? AND `status` = 1', array($res_id))->results();
                     $payments_count = count($payments);
                     $template->addJSScript('
-          var payments_count = \'' . $payments_count . '\';
-        ');
+                        var payments_count = \'' . $payments_count . '\';
+                        ');
 
-                    $rid = explode('/', $route);
-                    $rid = $rid[count($rid) - 1];
-
-                    if (!strlen($rid)) {
-                        Redirect::to(URL::build('/resources'));
-                    }
-
-                    $rid = explode('-', $rid);
-                    if (!is_numeric($rid[0])) {
-                        Redirect::to(URL::build('/resources'));
-                    }
-                    $rid = $rid[0];
-                    $resource = DB::getInstance()->get('resources', ['id', '=', $rid]);
-                    $author = new User($resource->creator_id);
-                    $creator_id = $user->nameToId($author->getDisplayname(true));
+                    $resource = DB::getInstance()->get('resources', ['id', '=', $res_id])->first();
+                    $creator_id = $resource->creator_id;
 
                     $cache->setCache('setting_gateway');
                     if ($cache->isCached('user_gateway_status_' . $creator_id) and !empty($cache->retrieve('user_gateway_status_' . $creator_id))) {
@@ -80,25 +69,24 @@ class ResourcesGateway extends Module
                         if (!empty($smarty->getTemplateVars('PURCHASE_FOR_PRICE'))) {
 
                             if ($cache->retrieve('user_gateway_status_' . $creator_id) == 'enable') {
-                                $res_id = $smarty->getTemplateVars('RESOURCE_ID');
                                 $res_gateway_button = $this->res_gateway_language->get('general', 'more_ways');
                                 $gateway_url = URL::build('/resource/gateway', 'res_id=' . $res_id);
 
                                 $template->addJSScript('
-                var res_id = \'' . $res_id . '\';
-                var res_gateway_button = \'' . $res_gateway_button . '\';
-                var gateway_url = \'' . $gateway_url . '\';
-              ');
+                                        var res_id = \'' . $res_id . '\';
+                                        var res_gateway_button = \'' . $res_gateway_button . '\';
+                                        var gateway_url = \'' . $gateway_url . '\';
+                                    ');
                             } else {
                                 $template->addJSScript('
-                var res_id = 0;
-              ');
+                                        var res_id = 0;
+                                    ');
                             }
                         }
                     } else {
                         $template->addJSScript('
-            var res_id = 0;
-          ');
+                                var res_id = 0;
+                            ');
                     }
                     $template->addJSFiles(
                         array(
